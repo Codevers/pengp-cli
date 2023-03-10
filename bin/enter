@@ -1,0 +1,42 @@
+#! /usr/bin/env node
+const ora = require("ora");
+// program模块用于命令行指令配置
+const program = require("commander");
+const chalk = require("chalk");
+const createModel = require('../lib/create')
+
+// 配置基本信息
+program.name("fs-cli") //配置脚手架名称
+.usage(`<command> [option]`) //是配置命令格式
+.version(`fs-v3-cli ${require("../package.json").version}`) //设置版本号
+
+// 配置create指令
+program.command("create <project-name>") // 增加创建指令
+.description("create a new project") // 添加描述信息
+.option("-f, --force", "overwrite target directory if it exists") // 强制覆盖
+.action((projectName, options) => {
+  createModel(projectName, options);
+});
+
+// 配置config指令
+program.command("config [value]")
+.description("inspect and modify the config")
+.option("-g, --get <key>", "get value by key")
+.option("-s, --set <key> <value>", "set option[key] is value")
+.option("-d, --delete <key>", "delete option by key")
+.action((value, keys) => {
+  console.log(value, keys); // value 可以取到 [value] 值，keys会获取到命令参数
+});
+
+// 监听 --help 指令
+program.on("--help", function () {
+  console.log(); // 前后两个空行调整格式，更舒适
+  console.log(
+    `Run ${chalk.cyan(
+      "fs-cli <command> --help"
+    )} for detailed usage of given command.`
+  );
+  console.log();
+});
+//解析用户执行时输入的参数 此方法一定要放在最后调用！！！
+program.parse(process.argv);
